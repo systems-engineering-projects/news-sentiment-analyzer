@@ -432,4 +432,4 @@ alias news-test='docker-compose exec api pytest'
 - [Docker Documentation](https://docs.docker.com/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Complete Docker Guide](DOCKER.md)
-- [Kubernetes Deployment](k8s/README.md)
+- [Kubernetes Deployment](../k8s/README.md)

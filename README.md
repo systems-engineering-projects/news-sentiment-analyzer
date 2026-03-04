@@ -87,7 +87,7 @@ A production-ready automation platform that orchestrates data collection, API in
 ### Why add Kubernetes (for practice)?
 - **Hands-on orchestration:** The same app that runs on Render is deployed to a local Kubernetes cluster (Docker Desktop) to practice workloads, CronJobs, ConfigMaps, Secrets, and Ingress without cloud cost.
 - **Observability and autoscaling:** K8s manifests include Prometheus, Grafana, and HPA so you can practice metrics, dashboards, and scaling under load (see [Observability](#observability-prometheus--grafana) and [Stress Test](#stress-test-hpa-autoscaling)).
-- **Portability:** Experience with K8s YAML and patterns (e.g. EKS + ALB in [AWS-DEPLOY.md](AWS-DEPLOY.md)) transfers to real clusters when you choose to run in the cloud.
+- **Portability:** Experience with K8s YAML and patterns (e.g. EKS + ALB in [documents/AWS-DEPLOY.md](documents/AWS-DEPLOY.md)) transfers to real clusters when you choose to run in the cloud.
 - **Clear split:** Production traffic stays on Render (or another host); the K8s deployment is explicitly for local practice and demos, not internet-facing.
 
 ## CI/CD Pipeline (GitLab CI)
@@ -146,7 +146,7 @@ docker-compose run --rm collector
 
 **API**: http://localhost:8000 | **Docs**: http://localhost:8000/docs
 
-See [DOCKER.md](DOCKER.md) for complete Docker guide.
+See [documents/DOCKER.md](documents/DOCKER.md) for complete Docker guide.
 
 ### Option B: Local Python Setup
 
@@ -267,6 +267,7 @@ This allows you to demonstrate the full automation pipeline on-demand without wa
 
 ```
 news-sentiment-comparison/
+├── documents/                # Documentation (DOCKER, K8s, QUICKSTART, SECURITY, etc.)
 ├── news_sentiment/          # Python backend package
 │   ├── config.py            # Configuration management
 │   ├── models.py             # Pydantic data models
@@ -379,7 +380,7 @@ keywords: ["heartwarming", "inspiring", "rescue", "hero", ...]
 - **Local:** API runs with `--reload` and the frontend with `npm run dev` (HMR), so most code edits apply without restarting. Restart the API if you change `requirements.txt` or `.env`; restart the frontend if you change `package.json` or `VITE_*` env vars. Re-run `python scripts/run_collector.py` after backend changes if you use the collector.
 - **Render (production):** Push to the connected branch to trigger a rebuild and deploy of the API and frontend. Change env vars in the Render dashboard, then redeploy the affected service(s). The cron job uses the latest deploy on each run; use **Trigger Run** in the dashboard to run it immediately.
 
-See **QUICKSTART.md** → [Making Code Changes & Restarting](QUICKSTART.md#making-code-changes--restarting) for full tables and commands.
+See **documents/QUICKSTART.md** → [Making Code Changes & Restarting](documents/QUICKSTART.md#making-code-changes--restarting) for full tables and commands.
 
 ### Running Tests
 
@@ -390,7 +391,7 @@ pytest
 
 ### Caching
 
-Daily comparison reads (`/today`, `/date/{date}`, `/most-uplifting`) are cached in memory by date. **TTL:** "Today" (UTC) uses a short TTL (default 5 min); past dates use a longer TTL (default 24 h). **Invalidation:** Same-process writes invalidate the cache for that date; the collector runs in a separate process, so its writes do not invalidate the API cache—staleness is cleared when the TTL expires. **Env vars:** `CACHE_ENABLED`, `CACHE_TTL_TODAY_SECONDS`, `CACHE_TTL_PAST_SECONDS`. See **QUICKSTART.md** → [Caching](QUICKSTART.md#caching) for details.
+Daily comparison reads (`/today`, `/date/{date}`, `/most-uplifting`) are cached in memory by date. **TTL:** "Today" (UTC) uses a short TTL (default 5 min); past dates use a longer TTL (default 24 h). **Invalidation:** Same-process writes invalidate the cache for that date; the collector runs in a separate process, so its writes do not invalidate the API cache—staleness is cleared when the TTL expires. **Env vars:** `CACHE_ENABLED`, `CACHE_TTL_TODAY_SECONDS`, `CACHE_TTL_PAST_SECONDS`. See **documents/QUICKSTART.md** → [Caching](documents/QUICKSTART.md#caching) for details.
 
 **Process flow with cache (request path):**
 
@@ -488,7 +489,7 @@ python scripts/zap_scan.py --target https://sentiment-lens.onrender.com
 python scripts/zap_scan.py --target http://localhost:8000 --fail-on high,medium
 ```
 
-See [SECURITY.md](SECURITY.md#security-testing-with-owasp-zap) for detailed instructions.
+See [documents/SECURITY.md](documents/SECURITY.md#security-testing-with-owasp-zap) for detailed instructions.
 
 ### Smoke testing production
 
@@ -500,7 +501,7 @@ python scripts/smoke_test_production.py
 python scripts/smoke_test_production.py --base-url https://your-api.onrender.com
 ```
 
-Use it **after deploys**, **after env var changes**, or when debugging prod vs local. See **QUICKSTART.md** → [Smoke testing production](QUICKSTART.md#smoke-testing-production) for when and how. For frontend and API checks in a browser, see **Playwright E2E** below.
+Use it **after deploys**, **after env var changes**, or when debugging prod vs local. See **documents/QUICKSTART.md** → [Smoke testing production](documents/QUICKSTART.md#smoke-testing-production) for when and how. For frontend and API checks in a browser, see **Playwright E2E** below.
 
 ### Playwright E2E (frontend + API)
 
@@ -791,7 +792,11 @@ If you're experiencing issues in production (e.g., all scores are 0, "No uplifti
    - **All Scores Zero**: If `avg_uplift: 0.0` in collection results, check for scoring errors in logs
    - **500 Errors**: Check logs for stack traces showing conversion errors or missing data
    - **Out of memory (Collector OOM)**: `Out of memory (used over 512Mi)` or `distilbert` loading in cron logs
-     - **Solution**: Force the collector to use Groq/OpenAI (no local model). Render Dashboard → Cron Job (`news-sentiment-collector` or `news-sentiment-collector-evening`) → Environment → set `USE_LOCAL_SENTIMENT` = `false` (no quotes). Save, then Manual Deploy or Trigger Run. See **QUICKSTART.md** → [Deploy to Render](QUICKSTART.md#option-a-deploy-to-render-blueprint--recommended) step 6.
+     - **Solution**: Force the collector to use Groq/OpenAI (no local model). Render Dashboard → Cron Job (`news-sentiment-collector` or `news-sentiment-collector-evening`) → Environment → set `USE_LOCAL_SENTIMENT` = `false` (no quotes). Save, then Manual Deploy or Trigger Run. See **documents/QUICKSTART.md** → [Deploy to Render](documents/QUICKSTART.md#option-a-deploy-to-render-blueprint--recommended) step 6.
+   - **MongoDB Atlas: `ServerSelectionTimeoutError: No replica set members found yet`** (cron or API 500 on `/today`):
+     - **Cause**: Render cannot reach MongoDB Atlas. Atlas only allows connections from IPs in its **Network Access** list; Render uses dynamic outbound IPs.
+     - **Solution**: In **MongoDB Atlas** → your project → **Network Access** → **Add IP Address**. Either add **Allow Access from Anywhere** (`0.0.0.0/0`) for development, or use [Render’s docs](https://render.com/docs/static-outbound-ip-addresses) if you use a static outbound IP. Save; connections from Render will then be allowed.
+     - **Optional**: If Atlas (e.g. free M0) is slow to wake, increase timeout on Render: set env `MONGODB_CONNECTION_TIMEOUT` = `30` (seconds) for the API and Cron Job services.
 
 4. **After Fixing Issues:**
    - Redeploy the affected service(s) in Render
@@ -831,7 +836,7 @@ docker-compose run --rm collector
 docker-compose down
 ```
 
-**Complete Docker guide**: [DOCKER.md](DOCKER.md)
+**Complete Docker guide**: [documents/DOCKER.md](documents/DOCKER.md)
 
 ### Kubernetes Deployment (Production Orchestration)
 
@@ -857,7 +862,7 @@ kubectl apply -f k8s/hpa.yaml
 
 **Complete Kubernetes guide**: [k8s/README.md](k8s/README.md)
 
-**Deploy to AWS (EKS + ALB):** [AWS-DEPLOY.md](AWS-DEPLOY.md) — EKS cluster, ECR, AWS Load Balancer Controller, and Ingress so the API is live on the internet (ALB free tier: 750 hrs/month for new accounts).
+**Deploy to AWS (EKS + ALB):** [documents/AWS-DEPLOY.md](documents/AWS-DEPLOY.md) — EKS cluster, ECR, AWS Load Balancer Controller, and Ingress so the API is live on the internet (ALB free tier: 750 hrs/month for new accounts).
 
 **Key features**:
 - Multi-replica API deployment (3+ pods)
@@ -871,14 +876,14 @@ kubectl apply -f k8s/hpa.yaml
 
 The API exposes a **Prometheus metrics** endpoint at `GET /metrics` (request count, latency by path). Use the [go-monitor](https://github.com/network-automation-projects/docker-kubernetes-demo) stack (or any Prometheus) to scrape it and build dashboards. A pre-built **Grafana dashboard** (request rate, latency p95, error rate) is available when running the go-monitor stack alongside the API. Ideal for showing instrumentation and observability in interviews.
 
-- **Setup**: [Kubernetes-Setup.md – Observability](Kubernetes-Setup.md#observability-prometheus-and-grafana)
+- **Setup**: [Kubernetes-Setup.md – Observability](documents/Kubernetes-Setup.md#observability-prometheus-and-grafana)
 - **Metrics**: `http_requests_total`, `http_request_duration_seconds` (Prometheus format)
 
 #### Stress Test (HPA Autoscaling)
 
 Run a short load test so the **Horizontal Pod Autoscaler** scales the API from 2 to more replicas under load, then back down when load stops. Demonstrates production-style autoscaling and is easy to demo in under 10 minutes.
 
-- **Guide**: [STRESS-TEST.md](STRESS-TEST.md) (metrics-server, HPA, `hey` load generator, watch commands)
+- **Guide**: [documents/STRESS-TEST.md](documents/STRESS-TEST.md) (metrics-server, HPA, `hey` load generator, watch commands)
 - **Quick run**: `./scripts/stress-test.sh` from the project root (after installing metrics-server)
 
 ### Frontend Deployment (Netlify)

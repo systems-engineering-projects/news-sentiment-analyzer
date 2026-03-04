@@ -6,7 +6,7 @@ This guide walks you through a quick stress test so you can see the API pods sca
 
 ## Prerequisites
 
-- The News Sentiment API is already deployed in Kubernetes (see [Kubernetes-Setup.md](Kubernetes-Setup.md)).
+- The News Sentiment API is already deployed in Kubernetes (see [Kubernetes-Setup.md](Kubernetes-Setup.md) in this folder).
 - `kubectl` is configured and pointing at your cluster.
 
 ---
@@ -121,4 +121,4 @@ Press Ctrl+C in each watch terminal when you’re done.
 
 It checks metrics-server, applies the HPA, prints the watch commands, then runs the in-cluster load for 90 seconds. Open two other terminals and run the printed watch commands to see pods and HPA update.
 
-For full Kubernetes setup and observability (Prometheus/Grafana), see [Kubernetes-Setup.md](Kubernetes-Setup.md).
+For full Kubernetes setup and observability (Prometheus/Grafana), see [Kubernetes-Setup.md](Kubernetes-Setup.md) in this folder.

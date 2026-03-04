@@ -209,14 +209,14 @@ Run this command to verify all files exist:
 ```bash
 cd /path/to/news-sentiment-comparison
 
-# Check Docker files
-ls -l Dockerfile docker-compose.yml .dockerignore DOCKER.md DOCKER-QUICKREF.md
+# Check Docker files (from project root)
+ls -l Dockerfile docker-compose.yml .dockerignore documents/DOCKER.md documents/DOCKER-QUICKREF.md
 
 # Check K8s files
 ls -l k8s/
 
 # Check documentation
-ls -l CONTAINERIZATION-SUMMARY.md
+ls -l documents/CONTAINERIZATION-SUMMARY.md
 
 # Validate docker-compose
 docker-compose config --quiet
@@ -242,7 +242,7 @@ All files should exist and docker-compose should validate without errors.
 If you encounter issues:
 
 1. Check the troubleshooting sections in:
-   - `DOCKER.md`
+   - `documents/DOCKER.md`
    - `k8s/README.md`
 
 2. Verify prerequisites:

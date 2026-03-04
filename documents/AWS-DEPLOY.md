@@ -211,4 +211,4 @@ curl http://<ALB_HOSTNAME>/api/v1/health
 | 6 | Apply `k8s/ingress-aws.yaml`; get ALB hostname from `kubectl get ingress` |
 | 7 | Set CORS and Netlify `VITE_API_URL` to the ALB URL |
 
-For local Kubernetes (Docker Desktop), see [Kubernetes-Setup.md](Kubernetes-Setup.md). For the full K8s reference, see [k8s/README.md](k8s/README.md).
+For local Kubernetes (Docker Desktop), see [Kubernetes-Setup.md](Kubernetes-Setup.md). For the full K8s reference, see [k8s/README.md](../k8s/README.md).

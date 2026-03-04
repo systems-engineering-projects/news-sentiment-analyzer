@@ -455,9 +455,9 @@ The Dockerfile uses multi-stage builds to:
 
 ## Next Steps
 
-- [Kubernetes Deployment](k8s/README.md) - Deploy to Kubernetes
-- [CI/CD Pipeline](.gitlab-ci.yml) - Automated testing and deployment
-- [Production Checklist](README.md#deployment) - Deploy to cloud platforms
+- [Kubernetes Deployment](../k8s/README.md) - Deploy to Kubernetes
+- [CI/CD Pipeline](../.gitlab-ci.yml) - Automated testing and deployment
+- [Production Checklist](../README.md#deployment) - Deploy to cloud platforms
 
 ## Resources
 

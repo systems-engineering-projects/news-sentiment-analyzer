@@ -302,7 +302,75 @@ The API exposes a **Prometheus metrics** endpoint at **GET /metrics** (request c
 
 ---
 
+## Troubleshooting: No fetch for today
+
+After switching to Kubernetes, the daily "fetch" (headline collection) only runs when **the cluster is running** and the **CronJob** has fired.
+
+**Why you might not see today's data**
+
+1. **CronJob runs at 10:00 AM UTC** (`k8s/collector-cronjob.yaml`: `schedule: "0 10 * * *"`). If your cluster (e.g. Docker Desktop) is off or suspended at that time, the job does not run.
+2. **CronJob not deployed** – The collector CronJob must be applied: `kubectl apply -f k8s/collector-cronjob.yaml`.
+3. **Job failed** – Image pull, missing secrets, or MongoDB unreachable can cause the job pod to fail.
+
+**Verify (run with cluster and kubectl context set)**
+
+Run each command on its own line (avoid pasting the whole block so `-n news-sentiment` doesn't break):
+
+```bash
+# Is the CronJob present?
+kubectl get cronjob -n news-sentiment
+
+# When did it last run? (look at LAST SCHEDULE and ACTIVE)
+kubectl get cronjob news-sentiment-collector -n news-sentiment
+
+# Recent jobs and their status
+kubectl get jobs -n news-sentiment
+
+# Logs from the most recent collector job (if a job ran)
+kubectl logs -n news-sentiment -l app=news-sentiment-collector --tail=100
+```
+
+If you paste the block and see `error: flag needs an argument: 'n' in -n`, the shell split a line: run `kubectl get cronjob news-sentiment-collector -n news-sentiment` as a single line.
+
+**Backfill today (manual run)**
+
+With the API reachable (e.g. port-forward):
+
+```bash
+curl -X POST http://localhost:8000/api/v1/collect \
+  -H "X-Cron-Secret: your-cron-secret-key"
+```
+
+Or run the collector script locally (with same env as API: `MONGODB_URI`, `NEWS_API_KEY`, etc.):
+
+```bash
+python scripts/run_collector.py
+```
+
+---
+
+## Troubleshooting: Backend has today's data but frontend doesn't show it
+
+If the API or DB has a comparison for today but the UI does not, check the following.
+
+1. **Which API is the frontend calling?**
+   - **Dev server** (`npm run dev`): The frontend uses the Vite proxy: requests to `/api` go to `http://localhost:8000`. Ensure the API is reachable (e.g. `kubectl port-forward -n news-sentiment deployment/news-sentiment-api 8000:8000`). The frontend runs on the port in `vite.config.ts` (e.g. 3000).
+   - **Built app or different origin:** The app uses `VITE_API_URL` if set. If you're opening a build or another origin, set `VITE_API_URL` to the API base (e.g. `http://localhost:8000/api/v1` when using port-forward). Otherwise the frontend may be hitting a different backend (e.g. Render) that uses a different DB and doesn't have today's data.
+
+2. **CORS**
+   - If the frontend runs on a different origin than the API (e.g. `http://localhost:3000` or `http://localhost:5173` and the API is on `http://localhost:8000`), the API must allow that origin. The K8s ConfigMap has `CORS_ORIGINS` (default in repo: Netlify only). For local UI, add your frontend origin:
+     - Edit `k8s/configmap.yaml`: set `CORS_ORIGINS` to e.g. `"https://sentimentlens.netlify.app,http://localhost:3000,http://localhost:5173"`.
+     - Re-apply: `kubectl apply -f k8s/configmap.yaml`, then restart the API deployment so it picks up the new config (e.g. `kubectl rollout restart deployment/news-sentiment-api -n news-sentiment`).
+
+3. **Refetch**
+   - The app loads `/today` only on initial load. Do a **hard refresh** (or reopen the tab) so it calls `/today` again.
+
+4. **Verify in the browser**
+   - Open DevTools → Network, reload the page, find the request to `/today` (or `/api/v1/today`). Check the response: 200 with JSON (data) vs 404 vs CORS error. That shows whether the frontend is talking to the right API and what it’s getting.
+
+---
+
 ## See also
 
-- Full Kubernetes reference: [k8s/README.md](k8s/README.md)
+- Full Kubernetes reference: [k8s/README.md](../k8s/README.md)
 - Docker and Compose: [DOCKER.md](DOCKER.md)

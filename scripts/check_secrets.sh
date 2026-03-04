@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scan tracked files for likely committed secrets.
 # Run before commit; add to pre-commit or CI.
-# See SECURITY.md.
+# See documents/SECURITY.md.
 
 set -e
 
@@ -17,7 +17,7 @@ if git ls-files --error-unmatch .env 2>/dev/null; then
 fi
 
 # Patterns that likely indicate committed secrets (exclude .env.example and docs)
-EXCLUDE='\.env\.example|SECURITY\.md|README|QUICKSTART|AGENTS\.md|check_secrets\.sh'
+EXCLUDE='\.env\.example|SECURITY\.md|documents/|README|QUICKSTART|AGENTS\.md|check_secrets\.sh'
 FILES="$(git ls-files 2>/dev/null | grep -vE "($EXCLUDE)" || true)"
 
 if [ -n "$FILES" ]; then
@@ -35,7 +35,7 @@ if [ -n "$FILES" ]; then
 fi
 
 if [ $FAIL -eq 1 ]; then
-  echo "Fix the issues above before committing. See SECURITY.md."
+  echo "Fix the issues above before committing. See documents/SECURITY.md."
   exit 1
 fi
 

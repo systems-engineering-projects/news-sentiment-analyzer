@@ -1,7 +1,7 @@
-y#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Quick HPA stress test: ensure metrics-server and HPA are in place, then run
 # load for 90s so pods scale up. In other terminals run the watch commands below.
-# See STRESS-TEST.md for full steps (including metrics-server install).
+# See documents/STRESS-TEST.md for full steps (including metrics-server install).
 
 set -e
 
@@ -12,7 +12,7 @@ echo "=== Checking metrics-server ==="
 if ! kubectl get deployment metrics-server -n kube-system &>/dev/null; then
   echo "metrics-server not found. Install it first:"
   echo "  kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
-  echo "See STRESS-TEST.md for Docker Desktop TLS note."
+  echo "See documents/STRESS-TEST.md for Docker Desktop TLS note."
   exit 1
 fi
 echo "metrics-server OK"

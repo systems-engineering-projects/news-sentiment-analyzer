@@ -255,7 +255,7 @@ news-sentiment-comparison/
 
 - [DOCKER.md](DOCKER.md) - Complete Docker guide
 - [DOCKER-QUICKREF.md](DOCKER-QUICKREF.md) - Quick command reference
-- [k8s/README.md](k8s/README.md) - Complete K8s guide
+- [k8s/README.md](../k8s/README.md) - Complete K8s guide
 - [Docker Documentation](https://docs.docker.com/)
 - [Kubernetes Documentation](https://kubernetes.io/docs/)
 
