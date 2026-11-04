@@ -1,8 +1,8 @@
 #!/bin/bash
 # Wrapper script for daily news collection cron job
 
-# Change to project directory
-cd /Users/rebeccaclarke/Documents/Financial/Gigs/devops_software_engineering/conceptprojects/news-sentiment-comparison
+# Change to the repo root, next to this script
+cd "$(dirname "$0")/.."
 
 # Activate virtual environment
 source .venv/bin/activate

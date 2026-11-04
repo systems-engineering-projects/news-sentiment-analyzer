@@ -34,6 +34,16 @@ if [ -n "$FILES" ]; then
   fi
 fi
 
+# Absolute home-directory paths, including docs (the checks above skip them).
+# This script is excluded because it contains the pattern itself.
+HOME_FILES="$(git ls-files 2>/dev/null | grep -vE 'check_secrets\.sh$' || true)"
+if [ -n "$HOME_FILES" ]; then
+  if echo "$HOME_FILES" | xargs grep -lE '/Users/|/home/' 2>/dev/null; then
+    echo "ERROR: Absolute home-directory path found in tracked files."
+    FAIL=1
+  fi
+fi
+
 if [ $FAIL -eq 1 ]; then
   echo "Fix the issues above before committing. See documents/SECURITY.md."
   exit 1

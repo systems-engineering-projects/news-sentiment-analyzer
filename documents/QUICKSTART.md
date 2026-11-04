@@ -266,10 +266,16 @@ chmod +x scripts/cron_collect.sh
 crontab -e
 ```
 
-Add this line (runs daily at 10:00 AM - adjust time as needed):
+From the repo root, print the absolute path cron should call:
+
+```bash
+echo "$(pwd)/scripts/cron_collect.sh"
+```
+
+Add this line (runs daily at 10:00 AM - adjust time as needed), using that path:
 
 ```cron
-0 10 * * * /Users/rebeccaclarke/Documents/Financial/Gigs/devops_software_engineering/conceptprojects/news-sentiment-comparison/scripts/cron_collect.sh >> /tmp/news-collector.log 2>&1
+0 10 * * * /absolute/path/to/news-sentiment-analyzer/scripts/cron_collect.sh >> /tmp/news-collector.log 2>&1
 ```
 
 **Cron time format:** `minute hour * * *`
