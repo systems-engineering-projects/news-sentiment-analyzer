@@ -2,11 +2,11 @@
 
 Fetches headlines from NewsAPI and RSS, scores how uplifting each one feels with an LLM (Groq or OpenAI), stores a daily rollup in MongoDB, and serves it from a FastAPI API and a React dashboard.
 
-- **Live app:** https://sentimentlens.netlify.app
-- **API docs:** https://sentiment-lens.onrender.com/docs
+A hosted demo (React dashboard on Netlify, API on Render) is available on request. Contact the developer to have it turned on.
+
 - **Repo:** https://gitlab.com/rclarke009-group/news-sentiment-comparison
 
-The Kubernetes cluster (Prometheus, Grafana, HPA) runs on Docker Desktop only. It is not on the internet. Contact the developer for a live demo.
+The Kubernetes cluster (Prometheus, Grafana, HPA) runs on Docker Desktop. Ask for that walkthrough the same way.
 
 ## Features
 
@@ -34,7 +34,7 @@ Scheduler (daily) → Collector → NewsAPI / RSS
 | Daily rollup | One snapshot per side per day. Stats are computed once at collection time and replayed by date. |
 | Headlines, not articles | Full text is slower, costlier, and often paywalled. The metric is the tone of what people see first. |
 | FastAPI | Async, Pydantic contracts, and OpenAPI docs at `/docs`. |
-| Render for the live site | Blueprint deploys the API and cron. GitLab CI validates the live URL; it does not deploy. |
+| Render for a hosted demo | Blueprint deploys the API and cron when the demo is turned on. GitLab CI validates the configured URL; it does not deploy. |
 | Kubernetes locally | Same app, for CronJobs, metrics, and HPA. Production traffic stays on Render. |
 
 ## CI
@@ -81,7 +81,7 @@ Trigger a deployed run with `POST /api/v1/collect` and header `X-Cron-Secret`. F
 
 ## API
 
-Interactive docs: https://sentiment-lens.onrender.com/docs
+Interactive docs are at `/docs` on a running API (locally, http://localhost:8000/docs).
 
 | Method | Path | Purpose |
 | --- | --- | --- |
